@@ -87,6 +87,15 @@ def delete_position(nom: str, user=Depends(get_user)):
     supabase.table("positions").delete().eq("nom", nom).eq("user_id", user.id).execute()
     return {"message": f"{nom} supprimé"}
 
+class PositionUpdate(BaseModel):
+    quantite: float
+    px_moyen: float
+
+@app.put("/positions/{nom}")
+def update_position(nom: str, update: PositionUpdate, user=Depends(get_user)):
+    supabase.table("positions").update(update.dict()).eq("nom", nom).eq("user_id", user.id).execute()
+    return {"message": f"{nom} modifié"}
+
 # ─── Routes livrets ───
 class Livret(BaseModel):
     nom: str
