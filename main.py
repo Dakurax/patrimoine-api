@@ -86,3 +86,25 @@ def add_position(position: Position, user=Depends(get_user)):
 def delete_position(nom: str, user=Depends(get_user)):
     supabase.table("positions").delete().eq("nom", nom).eq("user_id", user.id).execute()
     return {"message": f"{nom} supprimé"}
+
+# ─── Routes livrets ───
+class Livret(BaseModel):
+    nom: str
+    valeur: float
+
+@app.get("/livrets")
+def get_livrets(user=Depends(get_user)):
+    response = supabase.table("livrets").select("*").eq("user_id", user.id).execute()
+    return response.data
+
+@app.post("/livrets")
+def add_livret(livret: Livret, user=Depends(get_user)):
+    data = livret.dict()
+    data["user_id"] = user.id
+    response = supabase.table("livrets").insert(data).execute()
+    return {"message": "Livret ajouté", "data": response.data}
+
+@app.delete("/livrets/{nom}")
+def delete_livret(nom: str, user=Depends(get_user)):
+    supabase.table("livrets").delete().eq("nom", nom).eq("user_id", user.id).execute()
+    return {"message": f"{nom} supprimé"}
