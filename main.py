@@ -118,6 +118,14 @@ def delete_livret(nom: str, user=Depends(get_user)):
     supabase.table("livrets").delete().eq("nom", nom).eq("user_id", user.id).execute()
     return {"message": f"{nom} supprimé"}
 
+class LivretUpdate(BaseModel):
+    valeur: float
+
+@app.put("/livrets/{nom}")
+def update_livret(nom: str, update: LivretUpdate, user=Depends(get_user)):
+    supabase.table("livrets").update(update.dict()).eq("nom", nom).eq("user_id", user.id).execute()
+    return {"message": f"{nom} modifié"}
+
 # ─── Routes crypto ───
 class Crypto(BaseModel):
     nom: str
@@ -140,3 +148,11 @@ def add_crypto(crypto: Crypto, user=Depends(get_user)):
 def delete_crypto(nom: str, user=Depends(get_user)):
     supabase.table("crypto").delete().eq("nom", nom).eq("user_id", user.id).execute()
     return {"message": f"{nom} supprimé"}
+
+class CryptoUpdate(BaseModel):
+    quantite: float
+
+@app.put("/crypto/{nom}")
+def update_crypto(nom: str, update: CryptoUpdate, user=Depends(get_user)):
+    supabase.table("crypto").update(update.dict()).eq("nom", nom).eq("user_id", user.id).execute()
+    return {"message": f"{nom} modifié"}
