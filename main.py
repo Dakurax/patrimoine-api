@@ -108,3 +108,26 @@ def add_livret(livret: Livret, user=Depends(get_user)):
 def delete_livret(nom: str, user=Depends(get_user)):
     supabase.table("livrets").delete().eq("nom", nom).eq("user_id", user.id).execute()
     return {"message": f"{nom} supprimé"}
+
+# ─── Routes crypto ───
+class Crypto(BaseModel):
+    nom: str
+    ticker: str
+    quantite: float
+
+@app.get("/crypto")
+def get_crypto(user=Depends(get_user)):
+    response = supabase.table("crypto").select("*").eq("user_id", user.id).execute()
+    return response.data
+
+@app.post("/crypto")
+def add_crypto(crypto: Crypto, user=Depends(get_user)):
+    data = crypto.dict()
+    data["user_id"] = user.id
+    response = supabase.table("crypto").insert(data).execute()
+    return {"message": "Crypto ajoutée", "data": response.data}
+
+@app.delete("/crypto/{nom}")
+def delete_crypto(nom: str, user=Depends(get_user)):
+    supabase.table("crypto").delete().eq("nom", nom).eq("user_id", user.id).execute()
+    return {"message": f"{nom} supprimé"}
