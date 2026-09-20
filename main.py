@@ -96,6 +96,35 @@ def update_position(nom: str, update: PositionUpdate, user=Depends(get_user)):
     supabase.table("positions").update(update.dict()).eq("nom", nom).eq("user_id", user.id).execute()
     return {"message": f"{nom} modifié"}
 
+# ─── Routes CTO ───
+class CTO(BaseModel):
+    nom: str
+    ticker: str
+    quantite: float
+    px_moyen: float
+
+@app.get("/cto")
+def get_cto(user=Depends(get_user)):
+    response = supabase.table("cto").select("*").eq("user_id", user.id).execute()
+    return response.data
+
+@app.post("/cto")
+def add_cto(cto: CTO, user=Depends(get_user)):
+    data = cto.dict()
+    data["user_id"] = user.id
+    response = supabase.table("cto").insert(data).execute()
+    return {"message": "Position CTO ajoutée", "data": response.data}
+
+@app.put("/cto/{nom}")
+def update_cto(nom: str, update: PositionUpdate, user=Depends(get_user)):
+    supabase.table("cto").update(update.dict()).eq("nom", nom).eq("user_id", user.id).execute()
+    return {"message": f"{nom} modifié"}
+
+@app.delete("/cto/{nom}")
+def delete_cto(nom: str, user=Depends(get_user)):
+    supabase.table("cto").delete().eq("nom", nom).eq("user_id", user.id).execute()
+    return {"message": f"{nom} supprimé"}
+
 # ─── Routes livrets ───
 class Livret(BaseModel):
     nom: str
