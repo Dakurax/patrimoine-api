@@ -185,3 +185,8 @@ class CryptoUpdate(BaseModel):
 def update_crypto(nom: str, update: CryptoUpdate, user=Depends(get_user)):
     supabase.table("crypto").update(update.dict()).eq("nom", nom).eq("user_id", user.id).execute()
     return {"message": f"{nom} modifié"}
+# ─── Route historique ───
+@app.get("/historique")
+def get_historique(user=Depends(get_user)):
+    response = supabase.table("historique").select("*").eq("user_id", user.id).order("date").execute()
+    return response.data
