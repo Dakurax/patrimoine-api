@@ -190,3 +190,13 @@ def update_crypto(nom: str, update: CryptoUpdate, user=Depends(get_user)):
 def get_historique(user=Depends(get_user)):
     response = supabase.table("historique").select("*").eq("user_id", user.id).order("date").execute()
     return response.data
+class Historique(BaseModel):
+    date: str
+    valeur: float
+
+@app.post("/historique")
+def add_historique(h: Historique, user=Depends(get_user)):
+    data = h.dict()
+    data["user_id"] = user.id
+    response = supabase.table("historique").insert(data).execute()
+    return {"message": "Historique ajouté", "data": response.data}
